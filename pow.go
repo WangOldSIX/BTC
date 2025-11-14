@@ -26,15 +26,14 @@ func NewPOW(b *Block) *POW {
 
 func generateTargetString(difficulty uint64) string {
 	res := ""
-	//log.Println(len(res))
+	// 正确的工作量证明目标：前面有difficulty个0
 	for i := 1; i <= 64; i++ {
-		if i == int(difficulty) {
-			res += "1"
-		} else {
+		if i <= int(difficulty) {
 			res += "0"
+		} else {
+			res += "f"
 		}
 	}
-	//log.Println(len(res))
 	return res
 }
 
