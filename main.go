@@ -7,10 +7,15 @@ import "fmt"
 
 func main() {
 	bc := NewBlockChain()
-	for i := 0; i < 100; i++ {
+	cli:=CLI{bc}
+	cli.Run()
+	
+}
+
+func testAddBlock(blockSize int,bc *BlockChain){
+	for i := 0; i < blockSize; i++ {
 		bc.AddBlock(fmt.Sprintf("这是第%d块区块", i+3))
 	}
-	bc.PrintBC()
 }
 
 
