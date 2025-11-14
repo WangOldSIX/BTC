@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"crypto/sha256"
 	"encoding/binary"
+	"encoding/gob"
 	"fmt"
 	"time"
 )
@@ -26,7 +27,7 @@ func NewBlock(data string, preHash []byte) *Block {
 		Data:       []byte(data),
 		PreHash:    preHash,
 		TimeStamp:  uint64(time.Now().Unix()),
-		Difficulty: uint64(5),
+		Difficulty: uint64(3),
 	}
 	//b.SetHash()
 
@@ -74,4 +75,25 @@ func Uint64ToByte(num uint64) []byte {
 		panic(err)
 	}
 	return buffer.Bytes()
+}
+
+
+func Serialize(b *Block) []byte {
+	var buffer bytes.Buffer
+	encoder := gob.NewEncoder(&buffer)
+	err := encoder.Encode(b)
+	if err != nil {
+		panic(err)
+	}
+	return buffer.Bytes()
+}
+
+func Deserialize(data []byte) *Block {
+	var b Block
+	decoder := gob.NewDecoder(bytes.NewBuffer(data))
+	err := decoder.Decode(&b)
+	if err != nil {
+		panic(err)
+	}
+	return &b
 }
