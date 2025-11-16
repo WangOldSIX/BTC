@@ -108,3 +108,11 @@ func getAllElementsFromDb(db *bbolt.DB) error {
 		return nil
 	})
 }
+
+// Find all UTXOS where address is prarameter which name is ADDRESS
+func (bc *BlockChain) FindUTXOS(address string) []TxOutput {
+	var UTXO []TxOutput
+	//TODO
+
+	return UTXO
+}

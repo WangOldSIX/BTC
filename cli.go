@@ -18,6 +18,7 @@ const Usage = `
 Usage:
 	addBlock --data [DATA]  "add data to the blockchain"
 	printChain  "print all blocks in the blockchain"
+	getBalance --address ADDRESS  "get UTXOs where address is ADDRESS"
 
 Example:
 	addBlock --data "Hello Blockchain"
@@ -57,7 +58,17 @@ func (cli *CLI) Run() {
 		//print chain
 		fmt.Println("printChain")
 		cli.PrintBlockchain()
+	case "getBalance":
+		fmt.Println("getBalance")
+		if len(args) == 4 && args[2] == "--address" {
 
+			address := args[3]
+			cli.GetBalance(address)
+		} else {
+			fmt.Println("Invalid command, please check the usage")
+			fmt.Println(Usage)
+			return
+		}
 	default:
 		fmt.Println("Invalid command, please check the usage")
 		fmt.Println(Usage)
