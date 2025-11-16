@@ -112,7 +112,80 @@ func getAllElementsFromDb(db *bbolt.DB) error {
 // Find all UTXOS where address is prarameter which name is ADDRESS
 func (bc *BlockChain) FindUTXOS(address string) []TxOutput {
 	var UTXO []TxOutput
+
+	//我们定一个map来保存消费过的utxo
+	consumedUTXOs := make(map[string][]int64)
+
 	//TODO
+	//1.遍历所有区块
+	//2.遍历每个区块的交易
+	//3.遍历Output，找到自己赚的
+	//3.b 遍历Input，找到自己花的
+	//4.如果输出的PubKeyHash等于address，将其加入UTXO
+
+	//1.遍历所有区块
+	it := bc.NewIterator()
+	for {
+		block := it.Next()
+		for _, tx := range block.Transactions {
+			log.Printf("交易ID:%x\n", tx.TXID)
+			for i, output := range tx.TXOutputs {
+				log.Printf("Current Index:%d, PubKeyHash:%s\n", i, output.PubKeyHash)
+				if output.PubKeyHash == address {
+					UTXO = append(UTXO, output)
+				}
+			}
+
+			for i, input := range tx.TXInputs {
+				fmt.Printf("Current Index:%d\n", i)
+				indexArray := consumedUTXOs[string(input.TXid)]
+				indexArray = append(indexArray, input.Index)
+			}
+		}
+
+		if len(block.PreHash) == 0 {
+			log.Println("到达创世区块,遍历结束")
+			break
+		}
+	}
 
 	return UTXO
+}
+
+type BlockChainIterator struct {
+	db *bbolt.DB
+	//游标，用于不断索引
+	currentHashPointer []byte
+}
+
+func (bc *BlockChain) NewIterator() *BlockChainIterator {
+	return &BlockChainIterator{
+		bc.Db,
+		//最初指向区块链的最后一个区块，随着Next的调用，不断变化
+		bc.tail,
+	}
+}
+
+// 迭代器是属于区块链的
+// Next方式是属于迭代器的
+// 1. 返回当前的区块
+// 2. 指针前移
+func (it *BlockChainIterator) Next() *Block {
+	var block Block
+	it.db.View(func(tx *bbolt.Tx) error {
+		bucket := tx.Bucket([]byte(BlocksBucket))
+		if bucket == nil {
+			log.Panic("迭代器遍历时bucket不应该为空，请检查!")
+		}
+
+		blockTmp := bucket.Get(it.currentHashPointer)
+		//解码动作
+		block = *Deserialize(blockTmp)
+		//游标哈希左移
+		it.currentHashPointer = block.PreHash
+
+		return nil
+	})
+
+	return &block
 }
