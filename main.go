@@ -9,7 +9,7 @@ import (
 // the <icon src="AllIcons.Actions.Execute"/> icon in the gutter and select the <b>Run</b> menu item from here.</p>
 
 func main() {
-	bc := NewBlockChain()
+	bc := NewBlockChain("班长矿工")
 	cli := CLI{bc}
 	cli.Run()
 	cli.PrintBlockchain()
@@ -18,7 +18,7 @@ func main() {
 
 func testAddBlock(blockSize int, bc *BlockChain) {
 	for i := 0; i < blockSize; i++ {
-		bc.AddBlock(fmt.Sprintf("这是第%d块区块", i+3))
+		//bc.AddBlock(fmt.Sprintf("这是第%d块区块", i+3))
 	}
 }
 

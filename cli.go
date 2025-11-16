@@ -35,34 +35,33 @@ func (cli *CLI) Run() {
 	}
 
 	//2.analyze the command line arguments
-	cmd:=args[1]
-	switch cmd{
-		case "addBlock":
-			//add blocks
-			fmt.Println("addBlock")
-			//ensure the command is valid
-			if len(args) == 4 && args[2] == "--data" {
-				
-				//a.get the data
-				data:=args[3]
-				//b.handle the data
-				cli.AddBlock(data)
-			}else{
-				fmt.Println("Invalid command, please check the usage")
-				fmt.Println(Usage)
-				return
-			}
-			
-	
-		case "printChain":
-			//print chain
-			fmt.Println("printChain")
-			cli.PrintBlockchain()
+	cmd := args[1]
+	switch cmd {
+	/*case "addBlock":
+	//add blocks
+	fmt.Println("addBlock")
+	//ensure the command is valid
+	if len(args) == 4 && args[2] == "--data" {
 
-		default:
-			fmt.Println("Invalid command, please check the usage")
-			fmt.Println(Usage)
-			return
+		//a.get the data
+		data:=args[3]
+		//b.handle the data
+		cli.AddBlock(data)
+	}else{
+		fmt.Println("Invalid command, please check the usage")
+		fmt.Println(Usage)
+		return
+	}*/
+
+	case "printChain":
+		//print chain
+		fmt.Println("printChain")
+		cli.PrintBlockchain()
+
+	default:
+		fmt.Println("Invalid command, please check the usage")
+		fmt.Println(Usage)
+		return
 	}
 
 	//3.execute the command

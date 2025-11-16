@@ -44,7 +44,17 @@ func (pow *POW) Run() (hash []byte, nonce uint64) {
 	for {
 		//在计算哈希前更新区块的nonce
 		block.Nonce = nonce
-		tmp := joinBlock(block)
+		//tmp := joinBlock(block)
+		tmp := [][]byte{
+			block.PreHash,
+			block.MerkleRoot,
+			Uint64ToByte(block.Version),
+			Uint64ToByte(block.TimeStamp),
+			Uint64ToByte(block.Nonce),
+			Uint64ToByte(block.Difficulty),
+			//只对区块头做哈希值，区块体(DATA/TRANSACTION)通过梅克尔产生影响
+			//block.Data,
+		}
 		blockInfo := bytes.Join(tmp, make([]byte, 0))
 
 		currentHash := sha256.Sum256(blockInfo)

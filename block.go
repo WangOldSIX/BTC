@@ -10,9 +10,11 @@ import (
 )
 
 type Block struct {
-	Data    []byte
-	Hash    []byte
-	PreHash []byte
+	//Data    []byte 真实的DATA其实是Transactions数组
+	//真实的交易数组
+	Transactions []*Transaction
+	Hash         []byte
+	PreHash      []byte
 
 	//新增的字段
 	Version    uint64
@@ -22,14 +24,16 @@ type Block struct {
 	Nonce      uint64
 }
 
-func NewBlock(data string, preHash []byte) *Block {
+func NewBlock(txs []*Transaction, preHash []byte) *Block {
 	b := Block{
-		Data:       []byte(data),
-		PreHash:    preHash,
-		TimeStamp:  uint64(time.Now().Unix()),
-		Difficulty: uint64(3),
+		//Data:       []byte(data),
+		Transactions: txs,
+		PreHash:      preHash,
+		TimeStamp:    uint64(time.Now().Unix()),
+		Difficulty:   uint64(3),
 	}
 	//b.SetHash()
+	b.MerkleRoot = b.MakeMerkelRoot()
 
 	pow := NewPOW(&b)
 	hash, nonce := pow.Run()
@@ -42,7 +46,7 @@ func NewBlock(data string, preHash []byte) *Block {
 func (b Block) PrintBlock() {
 	fmt.Printf("PREHASH:[%x]\n", b.PreHash)
 	fmt.Printf("HASH:[%x]\n", b.Hash)
-	fmt.Printf("DATA:\"%s\"\n", b.Data)
+	//fmt.Printf("DATA:\"%s\"\n", b.Data)
 	fmt.Printf("TIMESTAMP:\"%v\"\n", b.TimeStamp)
 	fmt.Printf("NONCE:\"%v\"\n", b.Nonce)
 }
@@ -52,7 +56,7 @@ func (b Block) GoString() string {
 	//blockString += fmt.Sprintf("VERSION:<%v>\n", b.Version)
 	blockString += fmt.Sprintf("PREHASH:[%x]\n", b.PreHash)
 	blockString += fmt.Sprintf("HASH:[%x]\n", b.Hash)
-	blockString += fmt.Sprintf("DATA:\"%s\"\n", b.Data)
+	//blockString += fmt.Sprintf("DATA:\"%s\"\n", b.Data)
 	blockString += fmt.Sprintf("TIMESTAMP:\"%v\"\n", b.TimeStamp)
 	blockString += fmt.Sprintf("NONCE:\"%v\"\n", b.Nonce)
 
@@ -77,7 +81,6 @@ func Uint64ToByte(num uint64) []byte {
 	return buffer.Bytes()
 }
 
-
 func Serialize(b *Block) []byte {
 	var buffer bytes.Buffer
 	encoder := gob.NewEncoder(&buffer)
@@ -96,4 +99,11 @@ func Deserialize(data []byte) *Block {
 		panic(err)
 	}
 	return &b
+}
+
+// 模拟梅克尔根，只做简单拼接
+func (b *Block) MakeMerkelRoot() []byte {
+
+	//TODO
+	return []byte{}
 }
