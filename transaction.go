@@ -7,6 +7,8 @@ import (
 	"log"
 )
 
+const REWARD = 12.5
+
 // 1. TRANSACTION struct
 type Transaction struct {
 	TXID      []byte
@@ -42,6 +44,16 @@ func (tx *Transaction) SetHash() {
 	tx.TXID = hash[:]
 }
 
-//2. method of creating transaction
+// 2. method of creating transaction(CoinBase挖矿交易)
+func NewCoinBaseTx(address string, data string) *Transaction {
+	//Miner 挖矿时无需指定签名，所以sig字段可以由miner自己填写
+	input := TxInput{make([]byte, 0), -1, data}
+	output := TxOutput{PubKeyHash: address, value: REWARD}
+	//对于coinbase交易来说，只有一个input和output
+	tx := Transaction{make([]byte, 0), []TxInput{input}, []TxOutput{output}}
+	tx.SetHash()
+	return &tx
+}
+
 //3. create transaction
 //4. overwrite main program (DATA->TRANSACTION)
