@@ -10,6 +10,7 @@ func joinBlock(b *Block) [][]byte {
 	var tmp [][]byte
 	tmp = [][]byte{
 		b.PreHash,
+		//只对区块头做哈希值，区块体(DATA/TRANSACTION)通过梅克尔产生影响
 		//b.Data,
 		b.MerkleRoot,
 		Uint64ToByte(b.Version),
