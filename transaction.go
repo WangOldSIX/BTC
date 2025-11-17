@@ -26,7 +26,7 @@ type TxInput struct {
 
 type TxOutput struct {
 	//transfer balance
-	value float64
+	Value float64
 	//script
 	PubKeyHash string
 }
@@ -48,7 +48,7 @@ func (tx *Transaction) SetHash() {
 func NewCoinBaseTx(address string, data string) *Transaction {
 	//Miner 挖矿时无需指定签名，所以sig字段可以由miner自己填写
 	input := TxInput{make([]byte, 0), -1, data}
-	output := TxOutput{PubKeyHash: address, value: REWARD}
+	output := TxOutput{PubKeyHash: address, Value: REWARD}
 	//对于coinbase交易来说，只有一个input和output
 	tx := Transaction{make([]byte, 0), []TxInput{input}, []TxOutput{output}}
 	tx.SetHash()

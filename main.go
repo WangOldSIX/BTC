@@ -13,6 +13,7 @@ func main() {
 	cli := CLI{bc}
 	cli.Run()
 	cli.PrintBlockchain()
+	cli.GetBalance("班长矿工")
 	printCurrentTime()
 }
 
