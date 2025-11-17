@@ -116,7 +116,6 @@ func (bc *BlockChain) FindUTXOS(address string) []TxOutput {
 	//我们定一个map来保存消费过的utxo
 	consumedUTXOs := make(map[string][]int64)
 
-
 	//1.遍历所有区块
 	it := bc.NewIterator()
 	for {
@@ -125,18 +124,18 @@ func (bc *BlockChain) FindUTXOS(address string) []TxOutput {
 
 		for _, tx := range block.Transactions {
 			log.Printf("交易ID:%x\n", tx.TXID)
-			OUTPUT://打标签类似goto语句
+		OUTPUT: //打标签类似goto语句
 			//3.遍历Output，找到自己赚的
 			for i, output := range tx.TXOutputs {
 				log.Printf("Current Index:%d, PubKeyHash:%s\n", i, output.PubKeyHash)
 				//在这里做一个filter，将所有消耗过的outputs和当前output的index进行对比
 				//如果当前output的index不在消耗过的outputs中，那么它就是未被消耗的output
 				//如果当前output的index在消耗过的outputs中，那么它就是被消耗过的output
-				if consumedUTXOs[string(tx.TXID)]==nil{
-					for _,j:=range consumedUTXOs[string(tx.TXID)]{
-						if j==int64(i){
+				if consumedUTXOs[string(tx.TXID)] == nil {
+					for _, j := range consumedUTXOs[string(tx.TXID)] {
+						if j == int64(i) {
 							//当前准备添加的output已经消耗过了，不用再加了
-							log.Printf("当前output的index:%d在消耗过的outputs中，那么它就是被消耗过的output",i)
+							log.Printf("当前output的index:%d在消耗过的outputs中，那么它就是被消耗过的output", i)
 							continue OUTPUT
 						}
 					}
@@ -147,11 +146,17 @@ func (bc *BlockChain) FindUTXOS(address string) []TxOutput {
 					UTXO = append(UTXO, output)
 				}
 			}
-			//3.b 遍历Input，找到自己花的
-			for i, input := range tx.TXInputs {
-				fmt.Printf("Current Index:%d\n", i)
-				indexArray := consumedUTXOs[string(input.TXid)]
-				indexArray = append(indexArray, input.Index)
+			//如果是挖矿交易，则不做遍历直接跳过
+			if tx.IsCoinBase() {
+				log.Printf("当前交易是挖矿交易，不做遍历直接跳过")
+				continue
+			} else {
+				//3.b 遍历Input，找到自己花的
+				for i, input := range tx.TXInputs {
+					fmt.Printf("Current Index:%d\n", i)
+					indexArray := consumedUTXOs[string(input.TXid)]
+					indexArray = append(indexArray, input.Index)
+				}
 			}
 		}
 

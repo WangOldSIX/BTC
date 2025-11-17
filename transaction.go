@@ -55,5 +55,12 @@ func NewCoinBaseTx(address string, data string) *Transaction {
 	return &tx
 }
 
+func (tx *Transaction) IsCoinBase() bool {
+	//1.交易的input只有一个
+	//2.交易id为空
+	//3.交易index为-1
+	return len(tx.TXInputs) == 1 && tx.TXInputs[0].Index == -1 && bytes.Equal(tx.TXInputs[0].TXid, make([]byte, 0))
+}
+
 //3. create transaction
 //4. overwrite main program (DATA->TRANSACTION)
