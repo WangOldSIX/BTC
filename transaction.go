@@ -62,5 +62,40 @@ func (tx *Transaction) IsCoinBase() bool {
 	return len(tx.TXInputs) == 1 && tx.TXInputs[0].Index == -1 && bytes.Equal(tx.TXInputs[0].TXid, make([]byte, 0))
 }
 
-//3. create transaction
+// 3. create common transaction(创建普通转账交易)
+func NewTransaction(from, to string, amount float64, bc *BlockChain) *Transaction {
+	// 找到最合理的UTXO集合 map[string][]int64
+	utxos, resValue := bc.FindNeedUTXOs(from, amount)
+	var inputs []TxInput
+	var outputs []TxOutput
+
+	if resValue < amount {
+		log.Panic("Transaction failed. Not enough balance, resValue:", resValue, "amount:", amount)
+	}
+	// 将UTXO一个一个转成inputs
+	for id, indexArray := range utxos {
+		for _, i := range indexArray {
+			input := TxInput{[]byte(id), int64(i), from}
+			inputs = append(inputs, input)
+		}
+	}
+	// 创建outputs
+	output := TxOutput{
+		Value:      amount,
+		PubKeyHash: to,
+	}
+	outputs = append(outputs, output)
+	//如果有零钱，要找零
+	if resValue > amount {
+		output := TxOutput{
+			Value:      resValue - amount,
+			PubKeyHash: from,
+		}
+		outputs = append(outputs, output)
+	}
+	tx := Transaction{make([]byte, 0), inputs, outputs}
+	tx.SetHash()
+	return &tx
+}
+
 //4. overwrite main program (DATA->TRANSACTION)

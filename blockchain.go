@@ -206,3 +206,13 @@ func (it *BlockChainIterator) Next() *Block {
 
 	return &block
 }
+
+
+func (bc *BlockChain) FindNeedUTXOs(from string, amount float64) (map[string][]int64, float64) {
+	var utxos map[string][]int64
+	//找到utxos里面包含的钱数
+	var calc float64
+	//TODO: 1. 找到所有未被消耗的UTXO
+	//TODO: 2. 从未被消耗的UTXO中找到最合理的组合
+	return utxos, calc
+}
